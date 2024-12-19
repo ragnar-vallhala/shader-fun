@@ -6,7 +6,11 @@ const Canvas = () => {
   const wrapperRef = useRef(null);
 
   const [isDragging, setIsDragging] = useState(false);
-  const [position, setPosition] = useState({ x: window.innerWidth-600, y: window.innerHeight-600 });
+  let canvasSize = [600, 600];
+  if (window.innerWidth < 1200) {
+    canvasSize = [100, 100];
+  }
+  const [position, setPosition] = useState({ x: window.innerWidth - canvasSize[0], y: window.innerHeight - canvasSize[1] });
   const [offset, setOffset] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
@@ -48,7 +52,7 @@ const Canvas = () => {
         cursor: isDragging ? 'grabbing' : 'grab',
       }}
     >
-      <canvas ref={canvasRef} width={600} height={600} />
+      <canvas ref={canvasRef} width={canvasSize[0]} height={canvasSize[1]} />
     </div>
   );
 };
