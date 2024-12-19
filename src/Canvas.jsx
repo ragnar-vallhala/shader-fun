@@ -6,7 +6,7 @@ const Canvas = () => {
   const wrapperRef = useRef(null);
 
   const [isDragging, setIsDragging] = useState(false);
-  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [position, setPosition] = useState({ x: window.innerWidth-600, y: window.innerHeight-600 });
   const [offset, setOffset] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
