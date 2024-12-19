@@ -8,7 +8,7 @@ const Canvas = () => {
   const [isDragging, setIsDragging] = useState(false);
   let canvasSize = [600, 600];
   if (window.innerWidth < 1200) {
-    canvasSize = [100, 100];
+    canvasSize = [260, 260];
   }
   const [position, setPosition] = useState({ x: window.innerWidth - canvasSize[0], y: window.innerHeight - canvasSize[1] });
   const [offset, setOffset] = useState({ x: 0, y: 0 });
