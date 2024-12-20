@@ -8,6 +8,18 @@
   height:100%;
   width:100%;
 }
+
+.status-bar{
+  height:4vh;
+display: flex;
+}
+
+.status-bar-item{
+    flex: 1;  
+    border: 1px solid black;
+    padding: 10px;
+    text-align: center; 
+}
 header{
   background: #333;
   color: #fff;
@@ -15,15 +27,24 @@ header{
   display: flex;
   justify-content: space-between;
   align-items: center;
+  heigth:4vh;
 }
+
 h2{
-margin: 0;
+  margin: 0;
 }
+
 button{
-background: #0007acc;
+  background-color: #007acc;
   color: #fff;
   border: none;
   padding: 10px 20px;
   border-radius: 4px;
   cursor: pointer;
+  margin-right: 20px;
 }
+button:hover{
+  background-color: #00cc7a;
+  box-shadow: 5px 5px 5px 8px rgba(0, 0, 0, .5);
+}
+

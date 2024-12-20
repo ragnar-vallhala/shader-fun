@@ -1,143 +1,39 @@
 import React, { useState, useEffect } from 'react';
 import { Editor } from '@monaco-editor/react';
 import './CodeEditor.css';
-import { get_shader_code, set_shader_code, render_glsl } from './Renderer';
+import { get_shader_code, set_shader_code, get_time, get_framerate, get_frameCount, get_deltaTime, get_mousePosition } from './Renderer';
+import { get_canvas_size } from './Canvas';
+
+
+
 const CodeEditor = () => {
   const [code, setCode] = useState(`${get_shader_code()}`);
+
+  const [time, setTime] = useState(get_time());
+  const [framerate, setFramerate] = useState(get_framerate());
+  const [frameCount, setFrameCount] = useState(get_frameCount());
+  const [deltaTime, setDeltaTime] = useState(get_deltaTime());
+  const [mousePosition, setMousePosition] = useState(get_mousePosition());
+  const [viewportSize, setViewportSize] = useState(get_canvas_size());
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      setTime(get_time());
+      setFramerate(get_framerate());
+      setFrameCount(get_frameCount());
+      setDeltaTime(get_deltaTime());
+      setMousePosition(get_mousePosition());
+      setViewportSize(get_canvas_size());
+    }, 300);
+
+    // Cleanup the interval when the component is unmounted
+    return () => clearInterval(intervalId);
+  }, []); // Empt
+
 
   const handleEditorChange = (value) => {
     setCode(value); // Update the state when code changes
   };
-  // useEffect(() => {
-  //   // Define the keywords and types for the GLSL-like language
-  //   const keywords = [
-  //     'uniform', 'varying', 'void', 'int', 'float', 'vec3', 'vec4', 'mat3', 'mat4',
-  //     'bool', 'highp', 'mediump', 'lowp', 'discard', 'main'
-  //   ];
-
-  //   const typeKeywords = [
-  //     'boolean', 'double', 'byte', 'int', 'short', 'char', 'void', 'long', 'float'
-  //   ];
-
-  //   const operators = [
-  //     '=', '>', '<', '!', '~', '?', ':', '==', '<=', '>=', '!=',
-  //     '&&', '||', '++', '--', '+', '-', '*', '/', '&', '|', '^', '%',
-  //     '<<', '>>', '>>>', '+=', '-=', '*=', '/=', '&=', '|=', '^=',
-  //     '%=', '<<=', '>>=', '>>>='
-  //   ];
-
-  //   // Define the language structure
-  //   const customLanguageRules = {
-  //     keywords: keywords,
-  //     typeKeywords: typeKeywords,
-  //     operators: operators,
-  //     symbols: /[=><!~?:&|+\-*\/\^%]+/,
-  //     escapes: /\\(?:[abfnrtv\\"']|x[0-9A-Fa-f]{1,4}|u[0-9A-Fa-f]{4}|U[0-9A-Fa-f]{8})/,
-
-  //     tokenizer: {
-  //       root: [
-  //         // Match identifiers and keywords
-  //         [/[a-z_$][\w$]*/, {
-  //           cases: {
-  //             '@typeKeywords': 'keyword',
-  //             '@keywords': 'keyword',
-  //             '@default': 'identifier'
-  //           }
-  //         }],
-  //         [/[A-Z][\w\$]*/, 'type.identifier'],  // Class names
-
-  //         // Whitespace handling
-  //         { include: '@whitespace' },
-
-  //         // Brackets and delimiters
-  //         [/[{}()\[\]]/, '@brackets'],
-  //         [/[<>](?!@symbols)/, '@brackets'],
-  //         [/@symbols/, { cases: { '@operators': 'operator', '@default': '' } }],
-
-  //         // Number literals
-  //         [/\d*\.\d+([eE][\-+]?\d+)?/, 'number.float'],
-  //         [/0[xX][0-9a-fA-F]+/, 'number.hex'],
-  //         [/\d+/, 'number'],
-
-  //         // Punctuation (like commas, semicolons)
-  //         [/[;,.]/, 'delimiter'],
-
-  //         // String literals
-  //         [/"([^"\\]|\\.)*$/, 'string.invalid'], // non-terminated string
-  //         [/"/, { token: 'string.quote', bracket: '@open', next: '@string' }],
-
-  //         // Character literals
-  //         [/'[^\\']'/, 'string'],
-  //         [/(')(@escapes)(')/, ['string', 'string.escape', 'string']],
-  //         [/'/, 'string.invalid']
-  //       ],
-
-  //       // Comment block
-  //       comment: [
-  //         [/[^\/*]+/, 'comment'],
-  //         [/\/\*/, 'comment', '@push'],    // Nested comment
-  //         ["\\*/", 'comment', '@pop'],
-  //         [/[\/*]/, 'comment']
-  //       ],
-
-  //       // String handling
-  //       string: [
-  //         [/[^\\"]+/, 'string'],
-  //         [/@escapes/, 'string.escape'],
-  //         [/\\./, 'string.escape.invalid'],
-  //         [/"/, { token: 'string.quote', bracket: '@close', next: '@pop' }]
-  //       ],
-
-  //       // Whitespace handling
-  //       whitespace: [
-  //         [/[ \t\r\n]+/, 'white'],
-  //         [/\/\*/, 'comment', '@comment'],
-  //         [/\/\/.*$/, 'comment']
-  //       ]
-  //     },
-  //   };
-
-  //   // Register the custom language with Monaco
-  //   monaco.languages.register({ id: 'custom-glsl' });
-
-  //   // Set the tokenization rules for the custom language
-  //   monaco.languages.setMonarchTokensProvider('custom-glsl', customLanguageRules);
-
-  //   // Define a custom theme to map your tokens to colors
-  //   monaco.editor.defineTheme('myTheme', {
-  //     base: 'vs-dark', // Use the default dark theme as a base
-  //     inherit: true,
-  //     rules: [
-  //       { token: 'keyword', foreground: 'ff0000', fontStyle: 'bold' }, // Red keywords
-  //       { token: 'operator', foreground: '00ff00' }, // Green operators
-  //       { token: 'number', foreground: '0000ff' }, // Blue numbers
-  //       { token: 'string', foreground: 'ffa500' }, // Orange strings
-  //       { token: 'comment', foreground: '808080', fontStyle: 'italic' }, // Gray comments
-  //     ],
-  //     colors: {
-  //       'editor.background': '#1e1e1e', // Dark background
-  //       'editor.foreground': '#d4d4d4', // Light text color
-  //       'editorCursor.foreground': '#ff0000', // Cursor color
-  //       'editor.lineHighlightBackground': '#333333', // Line highlight
-  //       'editor.selectionBackground': '#3f3f3f' // Selection background
-  //     }
-  //   });
-
-  //   // Set the theme
-  //   monaco.editor.setTheme('myTheme');
-  //   monaco.editor.create(document.getElementById('editor-container'), {
-  //     value: code,
-  //     language: 'cpp',
-  //     theme: 'vs-dark',
-  //     onChange: handleEditorChange,
-  //     minimap: { enabled: true },
-  //     fontSize: 14,
-  //     scrollBeyondLastLine: true,
-  //     automaticLayout: true,
-  //     wordWrap: false
-  //   });
-  // }, []); // Empty dependency array to run only once on mount
-
 
   return (
     <div className='CodeEditor'>
@@ -162,6 +58,14 @@ const CodeEditor = () => {
           wordWrap: false
         }}
       />
+      <div className='status-bar'>
+        <div className='status-bar-item'>{`Time: ${time}`}</div>
+        <div className='status-bar-item'>{`Frame Count: ${frameCount}`}</div>
+        <div className='status-bar-item'>{`FPS: ${framerate.toFixed(2)}`}</div>
+        <div className='status-bar-item'>{`Delta Time: ${deltaTime.toFixed(4)}`}</div>
+        <div className='status-bar-item'>{`Mouse: ${mousePosition[0]} , ${mousePosition[1]}`}</div>
+        <div className='status-bar-item'>{`Viewport: ${viewportSize[0]} X ${viewportSize[1]}`}</div>
+      </div>
     </div>
   );
 };
